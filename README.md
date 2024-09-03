@@ -1,6 +1,6 @@
 # Web Socket Xplane 12
 
-Descrição breve do projeto.
+
 
 ## Instalação
 
