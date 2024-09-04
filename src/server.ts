@@ -15,13 +15,14 @@ interface DataRef {
 
 let dataRefs: DataRef[] = []
 
-// Referência de dados (dataRefs) que serão monitorados do X-Plane
+// Reference names for the datarefs on the simulator X-Plane 12
 const dataRefsNamesDict: { [key: string]: string } = {
-  "sim/flightmodel/position/latitude": "Latitude",
-  "sim/flightmodel/position/longitude": "Longitude",
-  "sim/cockpit2/tcas/targets/position/vertical_speed": "Vertical Speed",
-  "sim/flightmodel/position/groundspeed": "Ground Speed",
-  "sim/flightmodel2/position/groundspeed": "Ground Speed 2",
+  "sim/flightmodel/position/latitude": "lat",
+  "sim/flightmodel/position/longitude": "lng",
+  "sim/cockpit2/tcas/targets/position/vertical_speed": "vspeed",
+  "sim/flightmodel/position/groundspeed": "speed",
+  "sim/cockpit2/gauges/indicators/altitude_ft_pilot": "alt",
+  "sim/cockpit2/gauges/indicators/compass_heading_deg_mag": "heading",
 
 };
 
@@ -35,7 +36,7 @@ async function getDataRefs() {
       let arrayOfDataRefsObjects = response.data.data;
       dataRefs = arrayOfDataRefsObjects.filter((dataref: DataRef) =>{
 
-        
+
         if (dataref && dataref.name && dataref.name in dataRefsNamesDict) {
           dataRefDict[dataref.id] = dataref.name
           return true;
@@ -51,22 +52,20 @@ async function getDataRefs() {
 }
 
 async function setupWebSocket() {
-  await getDataRefs(); // Aguarda a obtenção dos dataRefs
+  await getDataRefs(); 
 
   const ws = new WebSocket('ws://localhost:8086/api/v1');
 
-  // Armazenar o identificador da requisição para controle
   let reqId = 1;
 
   ws.on('open', () => {
     console.log('Conexão WebSocket estabelecida');
-    // console.log(dataRefs);
 
     const request = JSON.stringify({
-      "req_id": reqId++,  // Identificador único da requisição
-      "type": "dataref_subscribe_values",  // Tipo de operação, supondo que 'subscribe' seja o correto
+      "req_id": reqId++, // Unique request ID
+      "type": "dataref_subscribe_values", // Type of request
       "params": {
-        "datarefs": dataRefs // Envia a lista de dataRefs
+        "datarefs": dataRefs 
       }
     });
 
@@ -86,7 +85,7 @@ async function setupWebSocket() {
     type: string
 
   }
-
+ 
   ws.on('message', (data:any) => {
     let dataRefs:DataRefUpdate = JSON.parse(data);
 
@@ -95,7 +94,7 @@ async function setupWebSocket() {
       
       for (let key in dataRefs.data) {
         if(dataRefDict[key]){
-          console.log(`DataRef: ${dataRefDict[key]} - Valor: ${dataRefs.data[key]}`);
+          console.log(`DataRef: ${dataRefsNamesDict[dataRefDict[key]]} - Value: ${dataRefs.data[key]} Type of Data: ${typeof dataRefs.data[key]}`);
 
         }
       }
@@ -114,5 +113,4 @@ async function setupWebSocket() {
   });
 }
 
-// Chama a função para configurar o WebSocket
 setupWebSocket();
