@@ -19,10 +19,10 @@ let dataRefs: DataRef[] = []
 const dataRefsNamesDict: { [key: string]: string } = {
   "sim/flightmodel/position/latitude": "lat",
   "sim/flightmodel/position/longitude": "lng",
-  "sim/cockpit2/tcas/targets/position/vertical_speed": "vspeed",
-  "sim/flightmodel/position/groundspeed": "speed",
+  "sim/cockpit2/gauges/indicators/vvi_fpm_pilot": "vspeed",
+  "sim/flightmodel/position/groundspeed": "speed", // converter para knots (está em m/s)
   "sim/cockpit2/gauges/indicators/altitude_ft_pilot": "alt",
-  "sim/cockpit2/gauges/indicators/compass_heading_deg_mag": "heading",
+  "sim/flightmodel2/position/mag_psi": "heading", // magnetic heading
 
 };
 
